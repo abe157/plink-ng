@@ -20,6 +20,10 @@
 #include "plink2_matrix_calc.h"
 #include "plink2_random.h"
 
+#ifdef VTUNE_ANALYSIS
+    #include <ittnotify.h>
+#endif
+
 #ifdef USE_CUDA
 #  include "cuda/plink2_matrix_cuda.h"
 #endif
@@ -3674,7 +3678,13 @@ THREAD_FUNC_DECL CalcGrmThread(void* raw_arg) {
   do {
     const uint32_t cur_batch_size = ctx->cur_batch_size;
     if (cur_batch_size) {
+#ifdef VTUNE_ANALYSIS
+    __itt_resume();
+#endif
       TransposeMultiplySelfIncr(ctx->normed_dosage_vmaj_bufs[parity], sample_ct, cur_batch_size, grm);
+#ifdef VTUNE_ANALYSIS
+    __itt_pause();
+#endif
     }
     parity = 1 - parity;
   } while (!THREAD_BLOCK_FINISH(arg));
