@@ -3199,6 +3199,10 @@ int RealMain(int argc, char** argv) {
 #else
 int main(int argc, char** argv) {
 #endif
+#ifdef VTUNE_ANALYSIS
+    __itt_pause();
+#endif
+
 #ifdef __cplusplus
   using namespace plink2;
 #endif

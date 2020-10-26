@@ -18,8 +18,8 @@
 #     FORCE_32BIT (warning: you may need to add a zconf.h symlink to make that
 #     work)
 #   Debug symbols: set DEBUG to -g
-NO_AVX2 = 1
-NO_SSE42 = 1
+NO_AVX2 = 
+NO_SSE42 =
 CPU_CHECK = 1
 NO_LAPACK =
 PREFER_CBLAS_F77 =
@@ -28,12 +28,14 @@ STATIC_ZLIB =
 STATIC_ZSTD = 1
 DYNAMIC_MKL = 1
 MKLROOT = /opt/intel/mkl
-MKL_IOMP5_DIR = /opt/intel/compilers_and_libraries_2020.0.166/linux/compiler/lib//intel64
+MKL_IOMP5_DIR = /opt/intel/compilers_and_libraries_2020.0.166/linux/compiler/lib/intel64
 FORCE_32BIT =
 DEBUG =
 CC ?= gcc
-CXX ?= g++
-
+#CC ?= icc
+#CXX ?= g++
+CXX ?= icpc
+VTUNE_HOME= /opt/intel/vtune_profiler
 BASEFLAGS=-DZSTD_MULTITHREAD
 # ***** end configuration *****
 
@@ -41,7 +43,7 @@ BASEFLAGS += ${DEBUG}
 
 include ../Makefile.src
 
-LINKFLAGS=-lm -lpthread ${DEBUG}
+LINKFLAGS=-lm -lpthread -L${VTUNE_HOME}/lib64 -littnotify ${DEBUG}
 ZLIB=
 ARCH32=
 CPUCHECK_FLAGS = ${DEBUG}
@@ -72,7 +74,7 @@ else
 endif
 BASEFLAGS += ${ARCH32}
 
-CFLAGS=-O2 -std=gnu99
+CFLAGS=-O2 -std=gnu99 -I${VTUNE_HOME}/include
 # zstd appears to be seriously targeted at -O3; see 26 Jul 2016 entry at
 # cbloom.com/rants.html
 ifdef ZSTD_O2
@@ -81,7 +83,7 @@ else
   ZCFLAGS=-O3 -std=gnu99
 endif
 # this actually needs to be named "CXXFLAGS"
-CXXFLAGS += -O2
+CXXFLAGS += -O2 -I${VTUNE_HOME}/include
 
 ifdef FORCE_CBLAS_F77
   BASEFLAGS += -DFORCE_CBLAS_F77
