@@ -19,10 +19,8 @@
 #include "plink2_matrix.h"
 #include "plink2_matrix_calc.h"
 #include "plink2_random.h"
-
-#ifdef VTUNE_ANALYSIS
-    #include <ittnotify.h>
-#endif
+#include "time.h"
+#include "sys/time.h"
 
 #ifdef USE_CUDA
 #  include "cuda/plink2_matrix_cuda.h"
@@ -3925,13 +3923,7 @@ THREAD_FUNC_DECL CalcGrmThread(void* raw_arg) {
   do {
     const uint32_t cur_batch_size = ctx->cur_batch_size;
     if (cur_batch_size) {
-#ifdef VTUNE_ANALYSIS
-    __itt_resume();
-#endif
       TransposeMultiplySelfIncr(ctx->normed_dosage_vmaj_bufs[parity], sample_ct, cur_batch_size, grm);
-#ifdef VTUNE_ANALYSIS
-    __itt_pause();
-#endif
     }
     parity = 1 - parity;
   } while (!THREAD_BLOCK_FINISH(arg));
@@ -4341,9 +4333,15 @@ PglErr CalcGrm(const uintptr_t* orig_sample_include, const SampleIdInfo* siip, c
     uint32_t is_not_first_block = 0;
     uint32_t pct = 0;
     uint32_t next_print_variant_idx = variant_ct / 100;
+    struct timeval start_time, end_time;
+    double runtime = 0;
+    gettimeofday(&start_time, NULL);
     logputs("Constructing GRM: ");
     fputs("0%", stdout);
     fflush(stdout);
+#ifdef VTUNE_ANALYSIS
+    __itt_resume();
+#endif
     PgrSampleSubsetIndex pssi;
     PgrSetSampleSubsetIndex(sample_include_cumulative_popcounts, simple_pgrp, &pssi);
     while (1) {
@@ -4385,12 +4383,18 @@ PglErr CalcGrm(const uintptr_t* orig_sample_include, const SampleIdInfo* siip, c
       variant_idx_start = variant_idx;
       parity = 1 - parity;
     }
+#ifdef VTUNE_ANALYSIS
+    __itt_pause();
+#endif
+    gettimeofday(&end_time, NULL);
+    runtime += (end_time.tv_sec - start_time.tv_sec)*1e6 + end_time.tv_usec - start_time.tv_usec;
     BLAS_SET_NUM_THREADS(1);
     if (pct > 10) {
       putc_unlocked('\b', stdout);
     }
     fputs("\b\b", stdout);
-    logputs("done.\n");
+    logputs("done.");
+    fprintf(stderr, "Time in GRM: %.3f sec", runtime * 1e-6);
     uint32_t* missing_cts = nullptr;  // stays null iff meanimpute
     uint32_t* missing_dbl_exclude_cts = nullptr;
     if (variant_include_has_missing) {
