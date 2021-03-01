@@ -21,7 +21,7 @@
 #include "plink2_common.h"
 #include "include/SFMT.h"
 
-#define VTUNE_ANALYSIS 1
+// #define VTUNE_ANALYSIS 1
 
 #ifdef VTUNE_ANALYSIS
     #include <ittnotify.h>

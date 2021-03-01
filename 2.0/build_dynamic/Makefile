@@ -25,15 +25,15 @@ ZSTD_O2 = 1
 STATIC_ZLIB =
 STATIC_ZSTD = 1
 DYNAMIC_MKL = 1
-MKLROOT = /opt/intel/mkl
-MKL_IOMP5_DIR = /opt/intel/compilers_and_libraries_2020.0.166/linux/compiler/lib/intel64
+MKLROOT = /opt/intel/oneapi/mkl/2021.1.1
+MKL_IOMP5_DIR = /opt/intel/oneapi/compiler/2021.1.2/linux/compiler/lib/intel64_lin
 FORCE_32BIT =
 DEBUG =
 CC ?= gcc
 #CC ?= icc
-#CXX ?= g++
-CXX ?= icpc
-VTUNE_HOME= /opt/intel/vtune_profiler
+CXX ?= g++
+#CXX ?= icpc
+#VTUNE_HOME= /opt/intel/vtune_profiler
 BASEFLAGS=-DZSTD_MULTITHREAD
 # ***** end configuration *****
 
@@ -41,7 +41,11 @@ BASEFLAGS += ${DEBUG}
 
 include ../Makefile.src
 
-LINKFLAGS=-lm -lpthread -L${VTUNE_HOME}/lib64 -littnotify ${DEBUG}
+LINKFLAGS=-lm -lpthread ${DEBUG}
+ifneq ($(VTUNE_HOME),)
+LINKFLAGS+=-L${VTUNE_HOME}/lib64 -littnotify
+endif
+
 ZLIB=
 ARCH32=
 CPUCHECK_FLAGS = ${DEBUG}
