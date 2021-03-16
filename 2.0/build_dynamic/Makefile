@@ -43,7 +43,7 @@ BASEFLAGS += ${DEBUG}
 
 include ../Makefile.src
 
-LINKFLAGS=-lm -lpthread ${DEBUG}
+LINKFLAGS=-lm -lpthread -ldl ${DEBUG}
 ifneq ($(VTUNE_HOME),)
 LINKFLAGS+=-L${VTUNE_HOME}/lib64 -littnotify
 endif
