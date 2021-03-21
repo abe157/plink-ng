@@ -44,9 +44,6 @@ BASEFLAGS += ${DEBUG}
 include ../Makefile.src
 
 LINKFLAGS=-lm -lpthread -ldl ${DEBUG}
-ifneq ($(VTUNE_HOME),)
-LINKFLAGS+=-L${VTUNE_HOME}/lib64 -littnotify
-endif
 
 ZLIB=
 ARCH32=
@@ -78,7 +75,7 @@ else
 endif
 BASEFLAGS += ${ARCH32}
 
-CFLAGS=-O2 -std=gnu99 -I${VTUNE_HOME}/include
+CFLAGS=-O2 -std=gnu99
 # zstd appears to be seriously targeted at -O3; see 26 Jul 2016 entry at
 # cbloom.com/rants.html
 ifdef ZSTD_O2
@@ -87,7 +84,7 @@ else
   ZCFLAGS=-O3 -std=gnu99
 endif
 # this actually needs to be named "CXXFLAGS"
-CXXFLAGS += -O2 -I${VTUNE_HOME}/include
+CXXFLAGS += -O2
 
 ifdef FORCE_CBLAS_F77
   BASEFLAGS += -DFORCE_CBLAS_F77
@@ -175,9 +172,19 @@ ifdef FORCE_32BIT
   CXXFLAGS += -Wno-sign-compare
 endif
 
+<<<<<<< HEAD
 SFX ?= ""
 
 all: plink2$(SFX) pgen_compress$(SFX)
+=======
+ifneq ($(VTUNE_HOME),)
+CFLAGS+=-I${VTUNE_HOME}/include -DVTUNE_ANALYSIS=1
+CXXFLAGS+=-I${VTUNE_HOME}/include -DVTUNE_ANALYSIS=1
+LINKFLAGS+=-L${VTUNE_HOME}/lib64 -littnotify
+endif
+
+all: plink2 pgen_compress
+>>>>>>> Update stale Makefile for grm
 
 plink2$(SFX): $(CSRC2) $(ZCSRC2) $(ZSSRC2) $(CCSRC2) ../plink2_cpu.cc
 	$(CC) $(CFLAGS) $(CSRC2) -c
