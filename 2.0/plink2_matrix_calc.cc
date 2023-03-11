@@ -4394,7 +4394,8 @@ PglErr CalcGrm(const uintptr_t* orig_sample_include, const SampleIdInfo* siip, c
     }
     fputs("\b\b", stdout);
     logputs("done.");
-    fprintf(stderr, "Time in GRM: %.3f sec", runtime * 1e-6);
+    fprintf(stdout, "\nTime in GRM: %.6f sec\n", runtime * 1e-6);
+    fflush(stdout);
     uint32_t* missing_cts = nullptr;  // stays null iff meanimpute
     uint32_t* missing_dbl_exclude_cts = nullptr;
     if (variant_include_has_missing) {
