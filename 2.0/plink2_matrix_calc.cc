@@ -7022,7 +7022,7 @@ THREAD_FUNC_DECL VscoreThread(void* raw_arg) {
     tmp_f_result_buf = ctx->tmp_f_result_bufs[tidx];
     dosage_f_vmaj = ctx->dosage_f_vmaj_bufs[tidx];
 #ifdef USE_CUDA
-    if (CudaSetDevice(cfmp->device_idx)) {
+    if (CudaSetDevice(0)) { //!!! Causing Unknown segmentatin fault. Hardcoe to GPU 0
       fputs("unexpected CudaSetDevice() failure in VscoreThread()\n", stderr);
       exit(S_CAST(int, kPglRetGpuFail));
     }
