@@ -9038,6 +9038,8 @@ PglErr Vscore(const uintptr_t* variant_include, const ChrInfo* cip, const uint32
     assert(g_bigstack_base <= g_bigstack_end);
     ctx.err_info = (~0LLU) << 32;
     SetThreadFuncAndData(VscoreThread, &ctx, &tg);
+    struct timeval start_vscore_time, end_vscore_time;
+    gettimeofday(&start_vscore_time, NULL);
 
     fputs("--variant-score: 0%", stdout);
     fflush(stdout);
@@ -9237,6 +9239,13 @@ PglErr Vscore(const uintptr_t* variant_include, const ChrInfo* cip, const uint32
       variant_idx += cur_block_size;
       pgfip->block_base = main_loadbufs[parity];
     }
+
+    gettimeofday(&end_vscore_time, NULL);
+    double vscore_time = 0;
+    vscore_time += (end_vscore_time.tv_sec - start_vscore_time.tv_sec)*1e6 + (end_vscore_time.tv_usec - start_vscore_time.tv_usec);
+    fprintf(stdout, "\nTime in vscore: %.6f sec\n", vscore_time * 1e-6);
+    fflush(stdout);
+
     if (unlikely(CswriteCloseNull(&css, cswritep))) {
       goto Vscore_ret_WRITE_FAIL;
     }
