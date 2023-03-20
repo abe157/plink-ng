@@ -172,11 +172,6 @@ ifdef FORCE_32BIT
   CXXFLAGS += -Wno-sign-compare
 endif
 
-<<<<<<< HEAD
-SFX ?= ""
-
-all: plink2$(SFX) pgen_compress$(SFX)
-=======
 ifneq ($(VTUNE_HOME),)
 CFLAGS+=-I${VTUNE_HOME}/include -DVTUNE_ANALYSIS=1
 CXXFLAGS+=-I${VTUNE_HOME}/include -DVTUNE_ANALYSIS=1
@@ -184,7 +179,6 @@ LINKFLAGS+=-L${VTUNE_HOME}/lib64 -littnotify
 endif
 
 all: plink2 pgen_compress
->>>>>>> Update stale Makefile for grm
 
 plink2$(SFX): $(CSRC2) $(ZCSRC2) $(ZSSRC2) $(CCSRC2) ../plink2_cpu.cc
 	$(CC) $(CFLAGS) $(CSRC2) -c
