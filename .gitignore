@@ -5,3 +5,5 @@ pgen_spec/pgen_spec.aux
 pgen_spec/pgen_spec.log
 pgen_spec/pgen_spec.out
 pgen_spec/pgen_spec.toc
+2.0/Python/build/**/*
+2.0/Python/src/Pgenlib.egg-info/**/*
